@@ -1,0 +1,40 @@
+#!/usr/bin/lua
+
+require("aports")
+
+upstream = require("archlinux").Init()
+--upstream = require("upstream").Init()
+
+maintainer = {}
+
+io.stderr:write("Reading aports...\n")
+adb = aports.new{"~/aports/main"}
+
+adb:foreach_aport(function(p)
+	newver = upstream:find_newer(p.pkgname, p.pkgver)
+	if newver ~= nil then
+		local m = aports.get_maintainer(p)
+		local t = {
+			["name"] = p.pkgname,
+			["current"] = p.pkgver,
+			["new"] = newver,
+			}
+		if maintainer[m] == nil then
+			maintainer[m] = {}
+		end
+		table.insert(maintainer[m], t)
+	end
+end)
+
+print(os.date())
+for m, pkgs in pairs(maintainer) do
+	if m == nil or m == "" then
+		m = "(unmaintained)"
+	end
+	table.sort(pkgs, function(a,b) return a.name<b.name end)
+	print("==== "..m.." ====")
+	for i,p in pairs(pkgs) do
+		print(string.format("%-40s(current: %s)", p.name.."-"..p.new, p.current))
+	end
+	print()
+end
