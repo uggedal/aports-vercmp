@@ -1,6 +1,6 @@
-#!/usr/bin/lua
+#!/usr/bin/lua5.2
 
-require("aports")
+
 
 upstream = require("archlinux").Init()
 --upstream = require("upstream").Init()
@@ -8,12 +8,12 @@ upstream = require("archlinux").Init()
 maintainer = {}
 
 io.stderr:write("Reading aports...\n")
-adb = aports.new{"~/aports/main"}
+db = require("aports.db").new("~/aports", "main")
 
-adb:foreach_aport(function(p)
+for p in db:each_aport() do
 	newver = upstream:find_newer(p.pkgname, p.pkgver)
 	if newver ~= nil then
-		local m = aports.get_maintainer(p)
+		local m = p:get_maintainer()
 		local t = {
 			["name"] = p.pkgname,
 			["current"] = p.pkgver,
@@ -24,7 +24,7 @@ adb:foreach_aport(function(p)
 		end
 		table.insert(maintainer[m], t)
 	end
-end)
+end
 
 print(os.date())
 for m, pkgs in pairs(maintainer) do
