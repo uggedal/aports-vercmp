@@ -2,8 +2,9 @@
 
 
 
-upstream = require("archlinux").Init()
 --upstream = require("upstream").Init()
+archlinux = require("archlinux").Init()
+gnome = require("gnome")
 
 maintainer = {}
 
@@ -11,13 +12,21 @@ io.stderr:write("Reading aports...\n")
 db = require("aports.db").new("~/aports", "main")
 
 for p in db:each_aport() do
-	newver = upstream:find_newer(p.pkgname, p.pkgver)
+	local gname = gnome.is_gnome_source(p)
+	if gname then
+		newver = gnome.find_newer(gname, p.pkgver)
+		upstream = "gnome"
+	else
+		newver = archlinux:find_newer(p.pkgname, p.pkgver)
+		upstream = "archlinux"
+	end
 	if newver ~= nil then
 		local m = p:get_maintainer()
 		local t = {
 			["name"] = p.pkgname,
 			["current"] = p.pkgver,
 			["new"] = newver,
+			["upstream"] = upstream,
 			}
 		if maintainer[m] == nil then
 			maintainer[m] = {}
@@ -34,7 +43,8 @@ for m, pkgs in pairs(maintainer) do
 	table.sort(pkgs, function(a,b) return a.name<b.name end)
 	print("==== "..m.." ====")
 	for i,p in pairs(pkgs) do
-		print(string.format("%-40s(current: %s)", p.name.."-"..p.new, p.current))
+		print(string.format("%-40s(current: %s) %s",
+				    p.name.."-"..p.new, p.current, p.upstream))
 	end
 	print()
 end
