@@ -2,9 +2,8 @@
 
 
 
---upstream = require("upstream").Init()
-archlinux = require("archlinux").Init()
-gnome = require("gnome")
+archlinux = require("upstream.archlinux").Init()
+gnome = require("upstream.gnome")
 
 maintainer = {}
 
