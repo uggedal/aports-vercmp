@@ -1,7 +1,6 @@
-module(..., package.seeall)
+apk = require("apk")
 
-require("apk")
-
+local M = {}
 --"http://mirrors.kernel.org/archlinux/"
 local url_base="http://ftp.lysator.liu.se/pub/archlinux/"
 local upstream_repos = { 
@@ -89,7 +88,9 @@ local function is_newer(arch, pkgver)
 --	print(pkgname.."-"..arch.pkgver.." (current: "..pkgver..")")
 end
 
-local function find_newer(self, pkgname, pkgver)
+local function find_newer(self)
+	local pkgname = self.pkg.pkgname
+	local pkgver = self.pkg.pkgver
 	local i, p, newest
 	if self.db[pkgname] == nil then
 		return
@@ -110,18 +111,31 @@ local function exists(self, pkgname)
 	return self.db[pkgname] ~= nil
 end
 
-function Init()
-	local i, repo
-	local handle = {}
+local repos_initialized = false
+local function init_repos()
+	if repos_initialized then
+		return db
+	end
 	for i,repo in pairs(upstream_repos) do
 		io.stderr:write("Reading upstream "..repo.."\n")
 		read_upstream_repodb(repo)
 	end
+	repos_initialized = true
+	return db
+end
 
-	handle.db = db
-	handle.find_newer = find_newer
-	handle.exists = exists
-	return handle
+function M.init(pkg)
+	init_repos()
+	if db[pkg.pkgname] == nil then
+		return nil
+	end
+	return {
+		provider_name = "archlinux",
+		db = db,
+		find_newer = find_newer,
+		pkg = pkg
+	}
 end
 
 
+return M

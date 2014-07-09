@@ -1,9 +1,10 @@
 #!/usr/bin/lua5.2
 
 
-
-archlinux = require("upstream.archlinux").Init()
-gnome = require("upstream.gnome")
+upstream_providers = {
+	(require("upstream.gnome")),
+	(require("upstream.archlinux")),
+}
 
 maintainer = {}
 
@@ -11,13 +12,14 @@ io.stderr:write("Reading aports...\n")
 db = require("aports.db").new("~/aports", "main")
 
 for p in db:each_aport() do
-	local upstream_pkg = gnome.init(p)
-	if upstream_pkg then
-		newver = upstream_pkg:find_newer()
-		upstream = upstream_pkg.provider_name
-	else
-		newver = archlinux:find_newer(p.pkgname, p.pkgver)
-		upstream = "archlinux"
+	local upstream_pkg = nil
+	local newver = nil
+	for _,provider in pairs(upstream_providers) do
+		upstream_pkg = provider.init(p)
+		if upstream_pkg then
+			newver = upstream_pkg:find_newer()
+			break
+		end
 	end
 	if newver ~= nil then
 		local m = p:get_maintainer()
@@ -25,8 +27,8 @@ for p in db:each_aport() do
 			["name"] = p.pkgname,
 			["current"] = p.pkgver,
 			["new"] = newver,
-			["upstream"] = upstream,
-			}
+			["upstream"] = upstream_pkg.provider_name,
+		}
 		if maintainer[m] == nil then
 			maintainer[m] = {}
 		end
