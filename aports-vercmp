@@ -11,10 +11,10 @@ io.stderr:write("Reading aports...\n")
 db = require("aports.db").new("~/aports", "main")
 
 for p in db:each_aport() do
-	local gname = gnome.is_gnome_source(p)
-	if gname then
-		newver = gnome.find_newer(gname, p.pkgver)
-		upstream = "gnome"
+	local upstream_pkg = gnome.init(p)
+	if upstream_pkg then
+		newver = upstream_pkg:find_newer()
+		upstream = upstream_pkg.provider_name
 	else
 		newver = archlinux:find_newer(p.pkgname, p.pkgver)
 		upstream = "archlinux"
