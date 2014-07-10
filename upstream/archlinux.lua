@@ -24,6 +24,8 @@ local pkgmap = {
 	["glib" ] = "glib2",
 	["libnl3" ] = "libnl",
 	["libnl" ] = "",
+	["freeradius" ] = "",
+	["freeradius3" ] = "freeradius",
 }
 
 local version_regex = {
@@ -32,6 +34,8 @@ local version_regex = {
 	["%.([a-z])$"] = "_%1",
 	["(%d)[Rr][Cc](%d+)"] = "%1_rc%2",
 	["(%d)b(%d+)$"] = "%1_beta%2",
+	["(%d)b(%d+)$"] = "%1_beta%2",
+	["^%d+:"] = "",
 }
 
 local function fix_version(ver)
