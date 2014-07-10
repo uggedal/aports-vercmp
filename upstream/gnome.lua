@@ -8,7 +8,7 @@ local M = {}
 
 local function find_newer(self)
 	local oldver = self.pkg.pkgver
-	print("DEBUG: searching:", self.gnome_name)
+	print(("DEBUG: %s: gnome: %s"):format(self.pkg.pkgname, self.gnome_name))
 	local baseurl = "http://ftp.gnome.org/pub/GNOME/sources/"
 	local jsonurl = baseurl..self.gnome_name.."/cache.json"
 	local jsondata = assert(http.request(jsonurl))
