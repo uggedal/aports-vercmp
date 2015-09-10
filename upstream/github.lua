@@ -40,7 +40,7 @@ function M.init(pkg)
 				provider_name = "github",
 				find_newer = find_newer,
 				pkg = pkg,
-				project = project,
+				project = project
 			}
 		end
 	end
