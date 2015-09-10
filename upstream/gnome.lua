@@ -24,11 +24,6 @@ local function find_newer(self)
 end
 
 function M.init(pkg)
-	local provider = {
-		provider_name = "gnome",
-		pkg = pkg,
-	}
-
 	for source in pkg:remote_sources() do
 		local gnomename = string.match(source, "GNOME/sources/([^/]+)/")
 			or string.match(source,
