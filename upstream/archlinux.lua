@@ -121,7 +121,7 @@ local function init_repos()
 		return db
 	end
 	for i,repo in pairs(upstream_repos) do
-		io.stderr:write("DEBUG: Reading archlinux "..repo.."\n")
+		dbg("archlinux: fetching "..repo)
 		read_upstream_repodb(repo)
 	end
 	repos_initialized = true
