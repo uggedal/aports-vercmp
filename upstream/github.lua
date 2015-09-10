@@ -13,6 +13,7 @@ local function find_newer(self)
 	end
 
 	local latest = self.pkg.pkgver
+	-- TODO fails if project has special characters, switch to pcre
 	for v in string.gmatch(data, ('a href="/%s/archive/v?([0-9a-z._-]+)%%.tar.gz"'):format(self.project)) do
 		for _,s in pairs{
 				{search="-rc", replace="_rc"},
