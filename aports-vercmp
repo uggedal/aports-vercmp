@@ -16,6 +16,7 @@ end
 upstream_providers = {
 	(require("upstream.gnome")),
 	(require("upstream.github")),
+	(require("upstream.generic")),
 	(require("upstream.archlinux")),
 }
 
