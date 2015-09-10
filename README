@@ -2,3 +2,8 @@ aports-vercmp
 =============
 
 Compare versions in Alpine Linux aports against upstream.
+
+Requirements
+------------
+
+    apk add lua-socket lua-cjson lua5.2-apk lua-sec lua-aports
