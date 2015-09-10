@@ -3,35 +3,6 @@ json = require("cjson")
 apk = require("apk")
 
 local M = {}
---[[
-github api only lets us only do 60 requests per hour, and potensially
-5000 if we register an application key. Instead of messing with oauth
-we simply parse the html for now
-local function find_newer(self)
-	local tagsurl = ("https://api.github.com/repos/%s/tags"):format(self.project)
-	print(("DEBUG: %s: github: %s"):format(self.pkg.pkgname, self.project))
-	local jsondata, status = assert(https.request(tagsurl))
-	local t
-	if jsondata then
-		t = json.decode(jsondata)
-	end
-	if status ~= 200 then
-		print(("github api error: %i\n  url: %s\n  message: %s\n  doc: %s\n"):format(status, tagsurl, t.message, t.documentation_url))
-		return nil
-	end
-	local latest = oldver or "0"
-	for k,v in pairs(t) do
-		print("DEBUG: github:", k, v.name)
-		if apk.version_compare(k, latest) == ">" then
-			latest = k
-		end
-	end
-	if latest == oldver then
-		latest = nil
-	end
-	return latest
-end
-]]--
 
 local function find_newer(self)
 	local releasesurl = ("https://github.com/%s/releases"):format(self.project)
