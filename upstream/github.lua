@@ -37,7 +37,7 @@ end
 
 local function find_newer(self)
 	local releasesurl = ("https://github.com/%s/releases"):format(self.project)
-	print(("DEBUG: %s: github: %s"):format(self.pkg.pkgname, self.project))
+	io.stderr:write(("DEBUG: %s: github: %s\n"):format(self.pkg.pkgname, self.project))
 	local data, status = https.request(releasesurl)
 	if data == nil then
 		io.stderr:write("ERROR: " .. status .. "\n")
