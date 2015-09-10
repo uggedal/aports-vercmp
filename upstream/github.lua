@@ -38,7 +38,12 @@ end
 local function find_newer(self)
 	local releasesurl = ("https://github.com/%s/releases"):format(self.project)
 	print(("DEBUG: %s: github: %s"):format(self.pkg.pkgname, self.project))
-	local data, status = assert(https.request(releasesurl))
+	local data, status = https.request(releasesurl)
+	if data == nil then
+		io.stderr:write("ERROR: " .. status .. "\n")
+		return
+	end
+
 	local latest = self.pkg.pkgver
 	for v in string.gmatch(data, ('a href="/%s/archive/v?([0-9a-z._-]+)%%.tar.gz"'):format(self.project)) do
 		for _,s in pairs{
