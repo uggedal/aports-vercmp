@@ -10,7 +10,12 @@ upstream_providers = {
 maintainer = {}
 
 io.stderr:write("Reading aports...\n")
-db = require("aports.db").new("~/aports", "main")
+aportsdir = os.getenv("APORTSDIR")
+if aportsdir == nil then
+	io.stderr:write("$APORTSDIR not set\n")
+	os.exit(1)
+end
+db = require("aports.db").new(aportsdir, "main")
 
 for p in db:each_aport() do
 	local upstream_pkg = nil
