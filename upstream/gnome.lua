@@ -1,5 +1,3 @@
-
-
 http = require("socket.http")
 json = require("cjson")
 apk = require("apk")
