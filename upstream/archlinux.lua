@@ -135,9 +135,9 @@ function M.init(pkg)
 	end
 	return {
 		provider_name = "archlinux",
-		db = db,
 		find_newer = find_newer,
-		pkg = pkg
+		pkg = pkg,
+		db = db
 	}
 end
 

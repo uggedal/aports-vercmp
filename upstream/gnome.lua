@@ -30,10 +30,10 @@ function M.init(pkg)
 					"download.gnome.org/sources/([^/]+)/")
 		if gnomename then
 			return {
-				gnome_name = gnomename,
 				provider_name = "gnome",
 				find_newer = find_newer,
-				pkg = pkg
+				pkg = pkg,
+				gnome_name = gnomename
 			}
 		end
 	end
