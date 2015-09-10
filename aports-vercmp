@@ -1,9 +1,19 @@
 #!/usr/bin/lua5.2
 
+-- TODO: use a real option parser
 DEBUG = false
-for i = #arg, 1, -1 do
-	if arg[i] == "-d" then
-		DEBUG = true
+LIMIT = 0
+do
+	i = 1
+	while i <= #arg do
+		if arg[i] == "-d" then
+			DEBUG = true
+		elseif arg[i] == "-l" then
+			i = i + 1
+			LIMIT = tonumber(arg[i])
+		end
+
+		i = i + 1
 	end
 end
 
@@ -30,28 +40,36 @@ end
 dbg("init: aports: reading main")
 db = require("aports.db").new(aportsdir, "main")
 
-for p in db:each_aport() do
-	local upstream_pkg = nil
-	local newver = nil
-	for _,provider in pairs(upstream_providers) do
-		upstream_pkg = provider.init(p)
-		if upstream_pkg then
-			newver = upstream_pkg:find_newer()
+do
+	i = 1
+	for p in db:each_aport() do
+		i = i + 1
+		if LIMIT ~= 0 and i >= LIMIT then
 			break
 		end
-	end
-	if newver ~= nil then
-		local m = p:get_maintainer()
-		local t = {
-			["name"] = p.pkgname,
-			["current"] = p.pkgver,
-			["new"] = newver,
-			["upstream"] = upstream_pkg.provider_name,
-		}
-		if maintainer[m] == nil then
-			maintainer[m] = {}
+
+		local upstream_pkg = nil
+		local newver = nil
+		for _,provider in pairs(upstream_providers) do
+			upstream_pkg = provider.init(p)
+			if upstream_pkg then
+				newver = upstream_pkg:find_newer()
+				break
+			end
 		end
-		table.insert(maintainer[m], t)
+		if newver ~= nil then
+			local m = p:get_maintainer()
+			local t = {
+				["name"] = p.pkgname,
+				["current"] = p.pkgver,
+				["new"] = newver,
+				["upstream"] = upstream_pkg.provider_name,
+			}
+			if maintainer[m] == nil then
+				maintainer[m] = {}
+			end
+			table.insert(maintainer[m], t)
+		end
 	end
 end
 
