@@ -2,7 +2,6 @@
 
 https = require("ssl.https")
 json = require("cjson")
-ml = require("ml")
 apk = require("apk")
 
 local M = {}
