@@ -16,13 +16,15 @@ function M.start(db, limit)
 			break
 		end
 
-		local upstream_pkg = nil
+		local upstream = nil
 		local newver = nil
-		for _,provider in pairs(upstream_providers) do
-			upstream_pkg = provider.init(p)
-			if upstream_pkg then
-				newver = upstream_pkg:find_newer()
-				break
+		for _, provider in pairs(upstream_providers) do
+			upstream = provider.init(p)
+			if upstream then
+				newver = upstream:find_newer()
+				if newver ~= nil then
+					break
+				end
 			end
 		end
 		if newver ~= nil then
@@ -31,7 +33,7 @@ function M.start(db, limit)
 				["name"] = p.pkgname,
 				["current"] = p.pkgver,
 				["new"] = newver,
-				["upstream"] = upstream_pkg.provider_name,
+				["upstream"] = upstream.provider_name,
 			}
 			if maintainers[m] == nil then
 				maintainers[m] = {}
