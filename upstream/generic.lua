@@ -18,14 +18,13 @@ local function find_newer(self)
 	end
 
 	local r = rex.new(
-		"(?i)"..
-		"\\b"..
 		self.pkg.pkgname..
+		"(?:[-_]?(?:src|source))?"..
 		"[-_]"..
-		"([^-/_\\s]*?\\d[^-/_\\s]*?)"..
-		"(?:[-_.](?:src|source|orig))?"..
-		"\\.(?:tar|t[bglx]z|tbz2|zip)"..
-		"\\b"
+		"([^-/_\\s]+?)"..
+		"(?i)"..
+		"(?:[-_](?:src|source|asc|orig))?"..
+		"\\.(?:tar|t[bglx]z|tbz2|zip)"
 	)
 
 	-- TODO: factor mathcing logic in helper
