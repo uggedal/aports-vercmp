@@ -73,9 +73,7 @@ local function read_upstream_repodb(repodb)
 	local dbfile = string.gsub(repodb, ".*/", "")
 	
 	local line
---	os.execute("wget "..url)
---	local f = io.popen("tar -ztf "..dbfile.." 2>/dev/null")
-	local f = io.popen("curl --silent "..url.." | tar -zt 2>/dev/null")
+	local f = io.popen("wget -qO- "..url.." | tar -zt 2>/dev/null")
 	local pkgdb = {}
 	for line in f:lines() do
 		local pkgname, pkgver, pkgrel = string.match(line, "^(.*)-([0-9]+.*)-([0-9]+)/$")
