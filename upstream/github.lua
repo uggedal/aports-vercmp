@@ -1,35 +1,32 @@
 https = require("ssl.https")
-apk = require("apk")
 
 local M = {}
 
-local function find_newer(self)
+local function versions(self)
+	local vers = {}
+
 	local releasesurl = ("https://github.com/%s/releases"):format(self.project)
 	dbg(("%s: github: fetching %s"):format(self.pkg.pkgname, self.project))
+
 	local data, status = https.request(releasesurl)
 	if data == nil then
 		io.stderr:write("ERROR: " .. status .. "\n")
-		return
+		return vers
 	end
 
-	local latest = self.pkg.pkgver
 	-- TODO fails if project has special characters, switch to pcre
 	for v in string.gmatch(data, ('a href="/%s/archive/v?([0-9a-z._-]+)%%.tar.gz"'):format(self.project)) do
-		for _,s in pairs{
+		-- TODO: make such logic global?
+		for _, s in pairs{
 				{search="-rc", replace="_rc"},
 				{search="-beta", replace="_beta"},
 				{search="-alpha", replace="_alpha"},
 			} do
 			v = string.gsub(v, s.search, s.replace)
 		end
-		if apk.version_compare(v, latest) == ">" then
-			latest = v
-		end
+		table.insert(vers, v)
 	end
-	if latest == self.pkg.pkgver then
-		latest = nil
-	end
-	return latest
+	return vers
 end
 
 function M.init(pkg)
@@ -39,7 +36,7 @@ function M.init(pkg)
 		if project  then
 			return {
 				provider_name = "github",
-				find_newer = find_newer,
+				versions = versions,
 				pkg = pkg,
 				project = project
 			}

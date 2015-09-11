@@ -1,10 +1,11 @@
 http = require("socket.http")
-apk = require("apk")
 rex = require("rex_pcre")
 
 local M = {}
 
-local function find_newer(self)
+local function versions(self)
+	local vers = {}
+
 	local baseurl = (string.gsub(self.source, "[^/]+$", ""))
 
 	dbg(("%s: generic: fetching %s"):format(self.pkg.pkgname, baseurl))
@@ -14,7 +15,7 @@ local function find_newer(self)
 	local data, status = http.request(baseurl)
 	if data == nil then
 		io.stderr:write("ERROR: " .. status .. "\n")
-		return
+		return vers
 	end
 
 	local r = rex.new(
@@ -27,19 +28,11 @@ local function find_newer(self)
 		"\\.(?:tar|t[bglx]z|tbz2|zip)"
 	)
 
-	-- TODO: factor mathcing logic in helper
-	local latest = self.pkg.pkgver or "0"
 	for v in rex.gmatch(data, r) do
-		if v ~= nil and apk.version_compare(v, latest) == ">" then
-			latest = v
-		end
+		table.insert(vers, v)
 	end
 
-	if latest == self.pkg.pkgver then
-		latest = nil
-	end
-
-	return latest
+	return vers
 end
 
 function M.init(pkg)
@@ -48,7 +41,7 @@ function M.init(pkg)
 		if string.match(source, "^http://") then
 			return {
 				provider_name = "generic",
-				find_newer = find_newer,
+				versions = versions,
 				pkg = pkg,
 				source = source
 			}

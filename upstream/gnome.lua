@@ -1,25 +1,24 @@
 http = require("socket.http")
 json = require("cjson")
-apk = require("apk")
 
 local M = {}
 
-local function find_newer(self)
+local function versions(self)
 	dbg(("%s: gnome: fetching %s"):format(self.pkg.pkgname, self.gnome_name))
+
 	local baseurl = "http://ftp.gnome.org/pub/GNOME/sources/"
 	local jsonurl = baseurl..self.gnome_name.."/cache.json"
+	-- TODO: rm assert
 	local jsondata = assert(http.request(jsonurl))
-	local n,t = unpack(json.decode(jsondata))
-	local latest = self.pkg.pkgver or "0"
-	for k,v in pairs(t[self.gnome_name]) do
-		if apk.version_compare(k, latest) == ">" then
-			latest = k
-		end
+
+	local n, t = unpack(json.decode(jsondata))
+
+	local vers = {}
+
+	for k, v in pairs(t[self.gnome_name]) do
+		table.insert(vers, k)
 	end
-	if latest == self.pkg.pkgver then
-		latest = nil
-	end
-	return latest
+	return vers
 end
 
 function M.init(pkg)
@@ -30,7 +29,7 @@ function M.init(pkg)
 		if gnomename then
 			return {
 				provider_name = "gnome",
-				find_newer = find_newer,
+				versions = versions,
 				pkg = pkg,
 				gnome_name = gnomename
 			}

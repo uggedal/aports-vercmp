@@ -1,5 +1,3 @@
-apk = require("apk")
-
 local M = {}
 --"http://mirrors.kernel.org/archlinux/"
 local url_base="http://ftp.lysator.liu.se/pub/archlinux/"
@@ -82,39 +80,25 @@ local function read_upstream_repodb(repodb)
 	f:close()
 end
 
-local function is_newer(arch, pkgver)
-	if not apk.version_is_less(pkgver, arch) then
-		return nil
-	end
-	return arch
-end
+local function versions(self)
+	local vers = {}
 
-local function find_newer(self)
 	dbg(("%s: archlinux: checking"):format(self.pkg.pkgname))
 
 	local pkgname = self.pkg.pkgname
-	local pkgver = self.pkg.pkgver
-	local i, p, newest
-	if self.db[pkgname] == nil then
-		return
-	end
-	newest = "0"
-	for i, p in pairs(self.db[pkgname]) do
-		if apk.version_is_less(newest, p.pkgver) then
-			newest = p.pkgver
-		end
-	end
-	if is_newer(newest, pkgver) then
-		return newest
-	end
-	return nil
-end
 
-local function exists(self, pkgname)
-	return self.db[pkgname] ~= nil
+	if self.db[pkgname] == nil then
+		return vers
+	end
+
+	for i, p in pairs(self.db[pkgname]) do
+		table.insert(vers, p.pkgver)
+	end
+	return vers
 end
 
 local repos_initialized = false
+
 local function init_repos()
 	if repos_initialized then
 		return db
@@ -134,11 +118,10 @@ function M.init(pkg)
 	end
 	return {
 		provider_name = "archlinux",
-		find_newer = find_newer,
+		versions = versions,
 		pkg = pkg,
 		db = db
 	}
 end
-
 
 return M
