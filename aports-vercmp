@@ -23,28 +23,30 @@ function dbg(msg)
 	end
 end
 
-upstream_providers = {
-	(require("upstream.gnome")),
-	(require("upstream.github")),
-	(require("upstream.generic")),
-	(require("upstream.archlinux")),
-}
+local function aports_db(section)
+	aportsdir = os.getenv("APORTSDIR")
+	if aportsdir == nil then
+		io.stderr:write("$APORTSDIR not set\n")
+		os.exit(1)
+	end
 
-maintainer = {}
-
-aportsdir = os.getenv("APORTSDIR")
-if aportsdir == nil then
-	io.stderr:write("$APORTSDIR not set\n")
-	os.exit(1)
+	dbg("init: aports: reading "..section)
+	return require("aports.db").new(aportsdir, section)
 end
-dbg("init: aports: reading main")
-db = require("aports.db").new(aportsdir, "main")
 
-do
-	i = 1
+local function check(db, limit)
+	local upstream_providers = {
+		(require("upstream.gnome")),
+		(require("upstream.github")),
+		(require("upstream.generic")),
+		(require("upstream.archlinux")),
+	}
+
+	local maintainers = {}
+	local i = 1
 	for p in db:each_aport() do
 		i = i + 1
-		if LIMIT ~= 0 and i >= LIMIT then
+		if limit ~= 0 and i >= limit then
 			break
 		end
 
@@ -65,24 +67,29 @@ do
 				["new"] = newver,
 				["upstream"] = upstream_pkg.provider_name,
 			}
-			if maintainer[m] == nil then
-				maintainer[m] = {}
+			if maintainers[m] == nil then
+				maintainers[m] = {}
 			end
-			table.insert(maintainer[m], t)
+			table.insert(maintainers[m], t)
 		end
+	end
+	return maintainers
+end
+
+local function output(maintainers)
+	print(os.date())
+	for m, pkgs in pairs(maintainers) do
+		if m == nil or m == "" then
+			m = "(unmaintained)"
+		end
+		table.sort(pkgs, function(a,b) return a.name<b.name end)
+		print("==== "..m.." ====")
+		for i,p in pairs(pkgs) do
+			print(string.format("%-40s(current: %s) %s",
+						p.name.."-"..p.new, p.current, p.upstream))
+		end
+		print()
 	end
 end
 
-print(os.date())
-for m, pkgs in pairs(maintainer) do
-	if m == nil or m == "" then
-		m = "(unmaintained)"
-	end
-	table.sort(pkgs, function(a,b) return a.name<b.name end)
-	print("==== "..m.." ====")
-	for i,p in pairs(pkgs) do
-		print(string.format("%-40s(current: %s) %s",
-				    p.name.."-"..p.new, p.current, p.upstream))
-	end
-	print()
-end
+output(check(aports_db("main"), LIMIT))
