@@ -1,22 +1,5 @@
 #!/usr/bin/lua5.2
 
--- TODO: use a real option parser
-DEBUG = false
-LIMIT = 0
-do
-	i = 1
-	while i <= #arg do
-		if arg[i] == "-d" then
-			DEBUG = true
-		elseif arg[i] == "-l" then
-			i = i + 1
-			LIMIT = tonumber(arg[i])
-		end
-
-		i = i + 1
-	end
-end
-
 function dbg(msg)
 	if DEBUG then
 		io.stderr:write("DEBUG: "..msg.."\n")
@@ -89,6 +72,22 @@ local function output(maintainers)
 						p.name.."-"..p.new, p.current, p.upstream))
 		end
 		print()
+	end
+end
+
+DEBUG = false
+LIMIT = 0
+do
+	local i = 1
+	while i <= #arg do
+		if arg[i] == "-d" then
+			DEBUG = true
+		elseif arg[i] == "-l" then
+			i = i + 1
+			LIMIT = tonumber(arg[i])
+		end
+
+		i = i + 1
 	end
 end
 
