@@ -1,20 +1,11 @@
 #!/usr/bin/lua5.2
 
+local db = require("db")
+
 function dbg(msg)
 	if DEBUG then
 		io.stderr:write("DEBUG: "..msg.."\n")
 	end
-end
-
-local function aports_db(section)
-	aportsdir = os.getenv("APORTSDIR")
-	if aportsdir == nil then
-		io.stderr:write("$APORTSDIR not set\n")
-		os.exit(1)
-	end
-
-	dbg("init: aports: reading "..section)
-	return require("aports.db").new(aportsdir, section)
 end
 
 local function check(db, limit)
@@ -91,4 +82,4 @@ do
 	end
 end
 
-output(check(aports_db("main"), LIMIT))
+output(check(db.open("main"), LIMIT))
