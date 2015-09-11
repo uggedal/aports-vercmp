@@ -90,6 +90,8 @@ local function is_newer(arch, pkgver)
 end
 
 local function find_newer(self)
+	dbg(("%s: archlinux: checking"):format(self.pkg.pkgname))
+
 	local pkgname = self.pkg.pkgname
 	local pkgver = self.pkg.pkgver
 	local i, p, newest
