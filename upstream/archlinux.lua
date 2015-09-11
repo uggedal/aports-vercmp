@@ -89,7 +89,6 @@ local function is_newer(arch, pkgver)
 		return nil
 	end
 	return arch
---	print(pkgname.."-"..arch.pkgver.." (current: "..pkgver..")")
 end
 
 local function find_newer(self)
