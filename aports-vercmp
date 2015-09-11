@@ -1,54 +1,13 @@
 #!/usr/bin/lua5.2
 
 local db = require("db")
+local check = require("check")
 local output = require("output")
 
 function dbg(msg)
 	if DEBUG then
 		io.stderr:write("DEBUG: "..msg.."\n")
 	end
-end
-
-local function check(db, limit)
-	local upstream_providers = {
-		(require("upstream.gnome")),
-		(require("upstream.github")),
-		(require("upstream.generic")),
-		(require("upstream.archlinux")),
-	}
-
-	local maintainers = {}
-	local i = 1
-	for p in db:each_aport() do
-		i = i + 1
-		if limit ~= 0 and i >= limit then
-			break
-		end
-
-		local upstream_pkg = nil
-		local newver = nil
-		for _,provider in pairs(upstream_providers) do
-			upstream_pkg = provider.init(p)
-			if upstream_pkg then
-				newver = upstream_pkg:find_newer()
-				break
-			end
-		end
-		if newver ~= nil then
-			local m = p:get_maintainer()
-			local t = {
-				["name"] = p.pkgname,
-				["current"] = p.pkgver,
-				["new"] = newver,
-				["upstream"] = upstream_pkg.provider_name,
-			}
-			if maintainers[m] == nil then
-				maintainers[m] = {}
-			end
-			table.insert(maintainers[m], t)
-		end
-	end
-	return maintainers
 end
 
 DEBUG = false
@@ -67,4 +26,4 @@ do
 	end
 end
 
-output.write(check(db.open("main"), LIMIT))
+output.write(check.start(db.open("main"), LIMIT))
