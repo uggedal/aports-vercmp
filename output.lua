@@ -10,7 +10,7 @@ local function sorted_index(t)
 end
 
 function M.write(maintainers)
-	print(os.date())
+	print(os.date("%Y-%m-%d %H:%M\n"))
 
 	for _, m in ipairs(sorted_index(maintainers)) do
 		local pkgs = maintainers[m]
