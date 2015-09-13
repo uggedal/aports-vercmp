@@ -26,4 +26,6 @@ do
 	end
 end
 
-output.write(check.start(db.open("main"), LIMIT))
+local start = os.time()
+
+output.write(check.start(db.open("main"), LIMIT), start)

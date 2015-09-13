@@ -9,8 +9,9 @@ local function sorted_index(t)
 	return index
 end
 
-function M.write(maintainers)
-	print(os.date("%Y-%m-%d %H:%M\n"))
+function M.write(maintainers, start)
+	local duration = os.difftime(os.time(), start)
+	print(os.date("%Y-%m-%d %H:%M").." ("..duration.."s)\n")
 
 	for _, m in ipairs(sorted_index(maintainers)) do
 		local pkgs = maintainers[m]
