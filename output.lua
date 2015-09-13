@@ -1,8 +1,19 @@
 local M = {}
 
+local function sorted_index(t)
+	local index = {}
+	for k in pairs(t) do
+		table.insert(index, k)
+	end
+	table.sort(index)
+	return index
+end
+
 function M.write(maintainers)
 	print(os.date())
-	for m, pkgs in pairs(maintainers) do
+
+	for _, m in ipairs(sorted_index(maintainers)) do
+		local pkgs = maintainers[m]
 		if m == nil or m == "" then
 			m = "(unmaintained)"
 		end
