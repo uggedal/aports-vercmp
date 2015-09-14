@@ -40,6 +40,7 @@ function M.fetch(url)
 					return true
 				end)
 			:setopt(curl.OPT_FOLLOWLOCATION, true)
+			:setopt(curl.OPT_TIMEOUT, 10)
 			:perform()
 		status = c:getinfo(curl.INFO_RESPONSE_CODE)
 		c:close()
