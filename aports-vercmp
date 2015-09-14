@@ -12,6 +12,7 @@ maintainer = {}
 io.stderr:write("Reading aports...\n")
 db = require("aports.db").new("~/aports", "main")
 
+rev = {}
 for p in db:each_aport() do
 	local upstream_pkg = nil
 	local newver = nil
@@ -30,10 +31,12 @@ for p in db:each_aport() do
 			["new"] = newver,
 			["upstream"] = upstream_pkg.provider_name,
 		}
+		rev[p.dir] = t
+--		print("DEBUG: maintainer:", m, p.pkgname)
 		if maintainer[m] == nil then
 			maintainer[m] = {}
 		end
-		table.insert(maintainer[m], t)
+		table.insert(maintainer[m], p.pkgname)
 	end
 end
 
@@ -42,9 +45,9 @@ for m, pkgs in pairs(maintainer) do
 	if m == nil or m == "" then
 		m = "(unmaintained)"
 	end
-	table.sort(pkgs, function(a,b) return a.name<b.name end)
 	print("==== "..m.." ====")
-	for i,p in pairs(pkgs) do
+	for pkg in db:each_in_build_order(pkgs) do
+		p = rev[pkg.dir]
 		print(string.format("%-40s(current: %s) %s",
 				    p.name.."-"..p.new, p.current, p.upstream))
 	end
