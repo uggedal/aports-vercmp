@@ -9,18 +9,22 @@ local function sorted_index(t)
 	return index
 end
 
-function M.write(maintainers, start)
+function M.write(maintainers, db, start)
 	local duration = os.difftime(os.time(), start)
 	print(os.date("%Y-%m-%d %H:%M").." ("..duration.."s)\n")
 
 	for _, m in ipairs(sorted_index(maintainers)) do
-		local pkgs = maintainers[m]
 		if m == nil or m == "" then
 			m = "(unmaintained)"
 		end
-		table.sort(pkgs, function(a,b) return a.name<b.name end)
 		print("==== "..m.." ====")
-		for i,p in pairs(pkgs) do
+
+		local pkgs = {}
+		for _, p in pairs(maintainers[m]) do
+			table.insert(pkgs, p.pkgname)
+		end
+		for pkg in db:each_in_build_order(pkgs) do
+			local p = maintainers[m][pkg.dir]
 			print(string.format("%-40s(current: %s) %s",
 						p.name.."-"..p.new, p.current, p.upstream))
 		end

@@ -1,6 +1,24 @@
-https = require("ssl.https")
+curl = require("lcurl")
 
 local M = {}
+
+local function fetch_url(url)
+	local result = ""
+	local c = curl.easy()
+		:setopt_url(url)
+		:setopt_writefunction(
+			function(data)
+				result=result..data
+				return true
+			end)
+		:setopt(curl.OPT_FOLLOWLOCATION, true)
+		:perform()
+	local status = c:getinfo(curl.INFO_RESPONSE_CODE)
+	c:close()
+	return result, status
+end
+
+
 
 local function versions(self)
 	local vers = {}
@@ -8,8 +26,8 @@ local function versions(self)
 	local releasesurl = ("https://github.com/%s/releases"):format(self.project)
 	dbg(("%s: github: fetching %s"):format(self.pkg.pkgname, self.project))
 
-	local data, status = https.request(releasesurl)
-	if data == nil then
+	local data, status = fetch_url(releasesurl)
+	if data ~= 200 then
 		io.stderr:write("ERROR: " .. status .. "\n")
 		return vers
 	end

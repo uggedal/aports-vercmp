@@ -1,5 +1,11 @@
 #!/usr/bin/lua5.2
 
+--[[
+Copyright (c) 2015 Natanael Copa <ncopa@alpinelinux.org>
+
+This content is released under the MIT License.
+--]]
+
 local db = require("db")
 local check = require("check")
 local output = require("output")
@@ -28,4 +34,6 @@ end
 
 local start = os.time()
 
-output.write(check.start(db.open("main"), LIMIT), start)
+local aportdb = db.open("main")
+
+output.write(check.start(aportdb, LIMIT), aportdb, start)
