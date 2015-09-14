@@ -24,20 +24,28 @@ function M.supported(url)
 end
 
 function M.fetch(url)
+	local i = 0
 	local result = ""
-	local c = curl.easy()
-		:setopt_url(url)
-		:setopt_writefunction(
-			function(data)
-				result=result..data
-				return true
-			end)
-		:setopt(curl.OPT_FOLLOWLOCATION, true)
-		:perform()
-	local status = c:getinfo(curl.INFO_RESPONSE_CODE)
-	c:close()
+	local status = 0
+	local p_ok, p_err = pcall(function()
+		local c = curl.easy()
+			:setopt_url(url)
+			:setopt_writefunction(
+				function(data)
+					i = i + 1
+					if i >= 100 then
+						return false
+					end
+					result=result..data
+					return true
+				end)
+			:setopt(curl.OPT_FOLLOWLOCATION, true)
+			:perform()
+		status = c:getinfo(curl.INFO_RESPONSE_CODE)
+		c:close()
+	end)
 
-	local ok = status_ok(url, status)
+	local ok = p_ok and status_ok(url, status) and result ~= nil
 	if not ok then
 		io.stderr:write("ERROR: " .. status .. "\n")
 	end
