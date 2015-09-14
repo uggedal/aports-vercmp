@@ -5,7 +5,7 @@ Copyright (c) 2015 Eivind Uggedal <eivind@uggedal.com>
 This content is released under the MIT License.
 --]]
 
-http = require("socket.http")
+net = require("net")
 rex = require("rex_pcre")
 
 local M = {}
@@ -17,11 +17,8 @@ local function versions(self)
 
 	dbg(("%s: generic: fetching %s"):format(self.pkg.pkgname, baseurl))
 
-	-- TODO: factor fetching logic in helper with support for
-	--       several formats
-	local data, status = http.request(baseurl)
-	if data == nil then
-		io.stderr:write("ERROR: " .. status .. "\n")
+	local data, ok = net.fetch(baseurl)
+	if not ok then
 		return vers
 	end
 
@@ -45,7 +42,7 @@ end
 function M.init(pkg)
 	for source in pkg:remote_sources() do
 		-- TODO: support foo.tar:: prefix
-		if string.match(source, "^http://") then
+		if net.supported(source) then
 			return {
 				provider_name = "generic",
 				versions = versions,

@@ -6,4 +6,4 @@ Compare versions in Alpine Linux aports against upstream.
 Requirements
 ------------
 
-    apk add lua-curl lua-cjson lua5.2-apk lua-sec lua-aports lua-rex-pcre
+    apk add lua-curl lua-cjson lua5.2-apk lua-aports lua-rex-pcre

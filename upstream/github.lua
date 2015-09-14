@@ -15,9 +15,8 @@ local function versions(self)
 	local releasesurl = ("https://github.com/%s/releases"):format(self.project)
 	dbg(("%s: github: fetching %s"):format(self.pkg.pkgname, self.project))
 
-	local data, status = net.fetch(releasesurl)
-	if status ~= 200 then
-		io.stderr:write("ERROR: " .. status .. "\n")
+	local data, ok = net.fetch(releasesurl)
+	if not ok then
 		return vers
 	end
 
