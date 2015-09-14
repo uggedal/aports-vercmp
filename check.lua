@@ -1,3 +1,9 @@
+--[[
+Copyright (c) 2015 Natanael Copa <ncopa@alpinelinux.org>
+
+This content is released under the MIT License.
+--]]
+
 local apk = require("apk")
 
 local M = {}

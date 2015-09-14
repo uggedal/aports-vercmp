@@ -1,3 +1,9 @@
+--[[
+Copyright (c) 2015 Natanael Copa <ncopa@alpinelinux.org>
+
+This content is released under the MIT License.
+--]]
+
 local M = {}
 --"http://mirrors.kernel.org/archlinux/"
 local url_base="http://ftp.lysator.liu.se/pub/archlinux/"

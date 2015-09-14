@@ -1,3 +1,9 @@
+--[[
+Copyright (c) 2015 Natanael Copa <ncopa@alpinelinux.org>
+
+This content is released under the MIT License.
+--]]
+
 http = require("socket.http")
 json = require("cjson")
 
