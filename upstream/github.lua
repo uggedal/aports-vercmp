@@ -1,11 +1,29 @@
 
 
-https = require("ssl.https")
 json = require("cjson")
 ml = require("ml")
 apk = require("apk")
+curl = require("lcurl")
 
 local M = {}
+
+local function fetch_url(url)
+	local result = ""
+	local c = curl.easy()
+		:setopt_url(url)
+		:setopt_writefunction(
+			function(data)
+				result=result..data
+				return true
+			end)
+		:setopt(curl.OPT_FOLLOWLOCATION, true)
+		:perform()
+	local status = c:getinfo(curl.INFO_RESPONSE_CODE)
+	c:close()
+	return result, status
+end
+
+
 --[[
 github api only lets us only do 60 requests per hour, and potensially
 5000 if we register an application key. Instead of messing with oauth
@@ -38,8 +56,12 @@ end
 
 local function find_newer(self)
 	local releasesurl = ("https://github.com/%s/releases"):format(self.project)
-	print(("DEBUG: %s: github: %s"):format(self.pkg.pkgname, self.project))
-	local data, status = assert(https.request(releasesurl))
+--[[
+	print(("DEBUG: %s: github: %s: %s"):format(self.pkg.pkgname,
+		self.project, releasesurl))
+--]]
+	local data, status = fetch_url(releasesurl)
+	assert (status == 200)
 	local latest = self.pkg.pkgver
 	for v in string.gmatch(data, ('a href="/%s/archive/v?([0-9a-z._-]+)%%.tar.gz"'):format(self.project)) do
 		for _,s in pairs{
@@ -49,9 +71,14 @@ local function find_newer(self)
 			} do
 			v = string.gsub(v, s.search, s.replace)
 		end
-		if apk.version_compare(v, latest) == ">" then
-			latest = v
+		if apk.version_validate(v) then
+			if apk.version_compare(v, latest) == ">" then
+				latest = v
+			end
+		else
+			print("INVALID version:", v)
 		end
+
 	end
 	if latest == self.pkg.pkgver then
 		latest = nil
