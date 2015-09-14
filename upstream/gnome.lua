@@ -23,7 +23,7 @@ local function versions(self)
 		return vers
 	end
 
-	local n, t = unpack(json.decode(jsondata))
+	local n, t = unpack(json.decode(data))
 
 	for k, v in pairs(t[self.gnome_name]) do
 		table.insert(vers, k)
