@@ -16,6 +16,14 @@ local upstream_providers = {
 	(require("upstream.archlinux")),
 }
 
+local function filter_invalid(versions)
+	for i = #versions, 1, -1 do
+		if not apk.version_validate(versions[i]) then
+			table.remove(versions, i)
+		end
+	end
+end
+
 local function vsort(a, b)
 	if apk.version_compare(a, b) == "=" then
 		return a > b
@@ -28,6 +36,7 @@ local function vsort(a, b)
 end
 
 local function find_newer(pkgver, versions)
+	filter_invalid(versions)
 	table.sort(versions, vsort)
 	local newver = nil
 
