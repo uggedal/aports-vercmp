@@ -21,19 +21,16 @@ function M.write(maintainers, db, start)
 	print(os.date("%Y-%m-%d %H:%M").." ("..duration.."s)\n")
 
 	for _, m in ipairs(sorted_index(maintainers)) do
-		if m == nil or m == "" then
-			m = "(unmaintained)"
-		end
 		print("==== "..m.." ====")
 
-		local pkgs = {}
-		for _, p in pairs(maintainers[m]) do
-			table.insert(pkgs, p.pkgname)
+		local pkgnames = {}
+		for pkgname, _ in pairs(maintainers[m]) do
+			table.insert(pkgnames, pkgname)
 		end
-		for pkg in db:each_in_build_order(pkgs) do
-			local p = maintainers[m][pkg.dir]
+		for pkg in db:each_in_build_order(pkgnames) do
+			local p = maintainers[m][pkg.pkgname]
 			print(string.format("%-40s(current: %s) %s",
-						p.name.."-"..p.new, p.current, p.upstream))
+						pkg.pkgname.."-"..p.new, p.current, p.upstream))
 		end
 		print()
 	end

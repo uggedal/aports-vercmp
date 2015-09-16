@@ -46,8 +46,11 @@ function M.start(db, limit)
 
 		if newer ~= nil then
 			local m = p:get_maintainer()
+			if m == nil or m == "" then
+				m = "(unmaintained)"
+			end
+
 			local t = {
-				["name"] = p.pkgname,
 				["current"] = p.pkgver,
 				["new"] = newer,
 				["upstream"] = upstream.provider_name,
@@ -55,9 +58,10 @@ function M.start(db, limit)
 			if maintainers[m] == nil then
 				maintainers[m] = {}
 			end
-			table.insert(maintainers[m], t)
+			maintainers[m][p.pkgname] = t
 		end
 	end
+
 	return maintainers
 end
 
