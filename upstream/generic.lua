@@ -23,7 +23,7 @@ local function versions(self)
 	end
 
 	local r = rex.new(
-		self.pkg.pkgname..
+		self.pkg.upstream_name..
 		"(?:[-_]?(?:src|source))?"..
 		"[-_]"..
 		"([^-/_\\s]+?)"..

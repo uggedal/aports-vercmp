@@ -6,6 +6,7 @@ This content is released under the MIT License.
 --]]
 
 local ver = require("ver")
+local name = require("name")
 
 local M = {}
 
@@ -41,6 +42,8 @@ function M.start(db, limit)
 		if limit ~= 0 and i > limit then
 			break
 		end
+
+		name.add_upstream(p)
 
 		local upstream, newer = search(p)
 
