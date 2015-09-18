@@ -22,11 +22,12 @@ local function search(p)
 	local upstream = nil
 	local newer = nil
 
-	for _, provider in pairs(upstream_providers) do
+	for i, provider in pairs(upstream_providers) do
 		upstream = provider.init(p)
 		if upstream ~= nil then
-			newer = ver.newer(p.pkgver, upstream:versions())
-			if newer ~= nil then
+			local versions = upstream:versions()
+			if #versions > 0 then
+				newer = ver.newer(p.pkgver, versions)
 				break
 			end
 		end
