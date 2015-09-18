@@ -13,6 +13,7 @@ local M = {}
 local upstream_providers = {
 	(require("upstream.gnome")),
 	(require("upstream.github")),
+	(require("upstream.pypi")),
 	(require("upstream.generic")),
 	(require("upstream.archlinux")),
 }
