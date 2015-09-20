@@ -8,29 +8,17 @@ This content is released under the MIT License.
 local net = require("net")
 local rex = require("rex_pcre")
 local pattern = require("pattern")
+local upstream = require("upstream")
 
 local M = {}
 
 local function versions(self)
-	local vers = {}
-
-	local baseurl = (string.gsub(self.source, "[^/]+$", ""))
-
-	dbg(("%s: directory: fetching %s (%s)"):format(
-		self.pkg.pkgname, baseurl, self.directory_name))
-
-	local data, ok = net.fetch(baseurl)
-	if not ok then
-		return vers
-	end
-
-	local r = pattern.version(self.directory_name)
-
-	for v in rex.gmatch(data, r) do
-		table.insert(vers, v)
-	end
-
-	return vers
+	return upstream.versions(
+		self.provider_name,
+		string.gsub(self.source, "[^/]+$", ""),
+		self.pkg.pkgname,
+		self.directory_name
+	)
 end
 
 function M.init(pkg)
