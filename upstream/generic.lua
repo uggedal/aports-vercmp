@@ -16,14 +16,15 @@ local function versions(self)
 
 	local baseurl = (string.gsub(self.source, "[^/]+$", ""))
 
-	dbg(("%s: generic: fetching %s"):format(self.pkg.pkgname, baseurl))
+	dbg(("%s: generic: fetching %s (%s)"):format(
+		self.pkg.pkgname, baseurl, self.generic_name))
 
 	local data, ok = net.fetch(baseurl)
 	if not ok then
 		return vers
 	end
 
-	local r = pattern.generic(self.pkg.upstream_name)
+	local r = pattern.version(self.generic_name)
 
 	for v in rex.gmatch(data, r) do
 		table.insert(vers, v)
@@ -33,15 +34,20 @@ local function versions(self)
 end
 
 function M.init(pkg)
+	local r = pattern.name()
+
 	for source in pkg:remote_sources() do
-		-- TODO: support foo.tar:: prefix
 		if net.supported(source) then
-			return {
-				provider_name = "generic",
-				versions = versions,
-				pkg = pkg,
-				source = source
-			}
+			local generic_name = rex.match(source, r)
+			if generic_name ~= nil then
+				return {
+					provider_name = "generic",
+					versions = versions,
+					pkg = pkg,
+					generic_name = generic_name,
+					source = source
+				}
+			end
 		end
 	end
 	return nil

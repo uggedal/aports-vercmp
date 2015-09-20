@@ -9,16 +9,23 @@ local rex = require("rex_pcre")
 
 local M = {}
 
-function M.generic(name)
-	return rex.new(
-		name..
+local function gen(name, version)
+	return rex.new(name..
 		"(?:[-_]?(?:src|source))?"..
 		"[-_]"..
-		"([^-/_\\s]+?)"..
+		version..
 		"(?i)"..
 		"(?:[-_](?:src|source|asc|orig))?"..
 		"\\.(?:tar|t[bglx]z|tbz2|zip)"
 	)
+end
+
+function M.name()
+	return gen("([^/]+)", "(?:[^-/_\\s]+?)")
+end
+
+function M.version(name)
+	return gen(name, "([^-/_\\s]+?)")
 end
 
 return M

@@ -22,7 +22,7 @@ local function versions(self)
 		return vers
 	end
 
-	local r = pattern.generic(self.cpan_name)
+	local r = pattern.version(self.cpan_name)
 
 	for v in rex.gmatch(data, r) do
 		table.insert(vers, v)
