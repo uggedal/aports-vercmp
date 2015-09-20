@@ -16,7 +16,7 @@ local function versions(self)
 	local baseurl = "http://ftp.gnome.org/pub/GNOME/sources/"
 	local jsonurl = baseurl..self.gnome_name.."/cache.json"
 
-	dbg(("%s: gnome: fetching %s"):format(self.pkg.pkgname, jsonurl))
+	dbg(("%s: gnome: fetching %s"):format(self.pkg.pkgname, self.gnome_name))
 
 	local data, ok = net.fetch(jsonurl)
 	if not ok then
