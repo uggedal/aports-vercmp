@@ -5,8 +5,9 @@ Copyright (c) 2015 Eivind Uggedal <eivind@uggedal.com>
 This content is released under the MIT License.
 --]]
 
-net = require("net")
-rex = require("rex_pcre")
+local net = require("net")
+local rex = require("rex_pcre")
+local pattern = require("pattern")
 
 local M = {}
 
@@ -22,15 +23,7 @@ local function versions(self)
 		return vers
 	end
 
-	local r = rex.new(
-		self.pkg.upstream_name..
-		"(?:[-_]?(?:src|source))?"..
-		"[-_]"..
-		"([^-/_\\s]+?)"..
-		"(?i)"..
-		"(?:[-_](?:src|source|asc|orig))?"..
-		"\\.(?:tar|t[bglx]z|tbz2|zip)"
-	)
+	local r = pattern.generic(self.pkg.upstream_name)
 
 	for v in rex.gmatch(data, r) do
 		table.insert(vers, v)
