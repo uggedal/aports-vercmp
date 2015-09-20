@@ -5,6 +5,8 @@ Copyright (c) 2015 Eivind Uggedal <eivind@uggedal.com>
 This content is released under the MIT License.
 --]]
 
+local rex = require("rex_pcre")
+
 local M = {}
 
 function M.generic(name)
