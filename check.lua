@@ -15,7 +15,7 @@ local upstream_providers = {
 	(require("upstream.cpan")),
 	(require("upstream.pypi")),
 	(require("upstream.rubygems")),
-	(require("upstream.generic")),
+	(require("upstream.directory")),
 	(require("upstream.archlinux")),
 }
 

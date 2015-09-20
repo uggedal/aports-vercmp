@@ -16,15 +16,15 @@ local function versions(self)
 
 	local baseurl = (string.gsub(self.source, "[^/]+$", ""))
 
-	dbg(("%s: generic: fetching %s (%s)"):format(
-		self.pkg.pkgname, baseurl, self.generic_name))
+	dbg(("%s: directory: fetching %s (%s)"):format(
+		self.pkg.pkgname, baseurl, self.directory_name))
 
 	local data, ok = net.fetch(baseurl)
 	if not ok then
 		return vers
 	end
 
-	local r = pattern.version(self.generic_name)
+	local r = pattern.version(self.directory_name)
 
 	for v in rex.gmatch(data, r) do
 		table.insert(vers, v)
@@ -38,13 +38,13 @@ function M.init(pkg)
 
 	for source in pkg:remote_sources() do
 		if net.supported(source) then
-			local generic_name = rex.match(source, r)
-			if generic_name ~= nil then
+			local directory_name = rex.match(source, r)
+			if directory_name ~= nil then
 				return {
-					provider_name = "generic",
+					provider_name = "directory",
 					versions = versions,
 					pkg = pkg,
-					generic_name = generic_name,
+					directory_name = directory_name,
 					source = source
 				}
 			end
