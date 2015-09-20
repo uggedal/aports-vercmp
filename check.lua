@@ -14,6 +14,7 @@ local upstream_providers = {
 	(require("upstream.github")),
 	(require("upstream.cpan")),
 	(require("upstream.pypi")),
+	(require("upstream.rubygems")),
 	(require("upstream.generic")),
 	(require("upstream.archlinux")),
 }
