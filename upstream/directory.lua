@@ -17,7 +17,7 @@ local function versions(self)
 		self.provider_name,
 		string.gsub(self.source, "[^/]+$", ""),
 		self.pkg.pkgname,
-		self.directory_name
+		self.file_name
 	)
 end
 
@@ -26,13 +26,13 @@ function M.init(pkg)
 
 	for source in pkg:remote_sources() do
 		if net.supported(source) then
-			local directory_name = rex.match(source, r)
-			if directory_name ~= nil then
+			local file_name = rex.match(source, r)
+			if file_name ~= nil then
 				return {
 					provider_name = "directory",
 					versions = versions,
 					pkg = pkg,
-					directory_name = directory_name,
+					file_name = file_name,
 					source = source
 				}
 			end
