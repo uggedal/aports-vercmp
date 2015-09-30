@@ -12,6 +12,7 @@ local M = {}
 local upstream_providers = {
 	(require("upstream.gnome")),
 	(require("upstream.github")),
+	(require("upstream.sf")),
 	(require("upstream.cpan")),
 	(require("upstream.pypi")),
 	(require("upstream.rubygems")),
