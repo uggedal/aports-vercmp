@@ -38,7 +38,7 @@ end
 function M.init(pkg)
 	for source in pkg:remote_sources() do
 		local project  = string.match(source,
-			".*::https://github.com/(.*)/archive/")
+			"https://github.com/(.*)/archive/")
 		if project  then
 			return {
 				provider_name = "github",
