@@ -16,9 +16,9 @@ local function sorted_index(t)
 	return index
 end
 
-function M.write(maintainers, db, start)
+function M.write(repo, maintainers, db, start)
 	local duration = os.difftime(os.time(), start)
-	print(os.date("%Y-%m-%d %H:%M").." ("..duration.."s)\n")
+	print(repo..": "..os.date("%Y-%m-%d %H:%M").." ("..duration.."s)\n")
 
 	for _, m in ipairs(sorted_index(maintainers)) do
 		print("==== "..m.." ====")

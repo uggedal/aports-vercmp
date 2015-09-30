@@ -33,8 +33,13 @@ do
 	end
 end
 
-local start = os.time()
 
-local aportdb = db.open("main")
 
-output.write(check.start(aportdb, LIMIT), aportdb, start)
+local repos = { "main", "community" }
+
+for _, repo in ipairs(repos) do
+	local start = os.time()
+	local aportdb = db.open(repo)
+
+	output.write(repo, check.start(aportdb, LIMIT), aportdb, start)
+end
