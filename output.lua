@@ -27,11 +27,22 @@ function M.write(repo, maintainers, db, start)
 		for pkgname, _ in pairs(maintainers[m]) do
 			table.insert(pkgnames, pkgname)
 		end
+		local notfound = {}
 		for pkg in db:each_in_build_order(pkgnames) do
 			local p = maintainers[m][pkg.pkgname]
-			print(string.format("%-40s(current: %s) %s",
-						pkg.pkgname.."-"..p.new, p.current, p.upstream))
+
+			if p.notfound then
+				table.insert(notfound, pkg)
+			else
+				print(string.format("%-40s(current: %s) %s",
+					pkg.pkgname.."-"..p.new, p.current, p.upstream))
+			end
 		end
+
+		for _, pkg in ipairs(notfound) do
+			print(string.format("%-40sno upstream version", pkg.pkgname))
+		end
+
 		print()
 	end
 end

@@ -22,18 +22,21 @@ local upstream_providers = {
 local function search(p)
 	local upstream = nil
 	local newer = nil
+	local notfound = true
 
 	for i, provider in pairs(upstream_providers) do
 		upstream = provider.init(p)
+
 		if upstream ~= nil then
 			local versions = upstream:versions()
 			if #versions > 0 then
+				notfound = false
 				newer = ver.newer(p.pkgver, versions)
 				break
 			end
 		end
 	end
-	return upstream, newer
+	return upstream, newer, notfound
 end
 
 function M.start(db, limit)
@@ -46,19 +49,30 @@ function M.start(db, limit)
 			break
 		end
 
-		local upstream, newer = search(p)
+		local upstream, newer, notfound = search(p)
+
+		local t = nil
+		local m = p:get_maintainer()
+		if m == nil or m == "" then
+			m = "(unmaintained)"
+		end
 
 		if newer ~= nil then
-			local m = p:get_maintainer()
-			if m == nil or m == "" then
-				m = "(unmaintained)"
-			end
-
-			local t = {
+			t = {
 				["current"] = p.pkgver,
 				["new"] = newer,
 				["upstream"] = upstream.provider_name,
+				["notfound"] = notfound
 			}
+		end
+
+		if notfound then
+			t = {
+				["notfound"] = notfound
+			}
+		end
+
+		if t ~= nil then
 			if maintainers[m] == nil then
 				maintainers[m] = {}
 			end
