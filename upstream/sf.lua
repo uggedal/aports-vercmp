@@ -22,7 +22,13 @@ end
 function M.init(pkg)
 	for source in pkg:remote_sources() do
 		local sf_name  = string.match(source,
-			"http://sourceforge.net/projects/([^/]+)")
+			"https?://sourceforge.net/projects/([^/]+)") or
+			string.match(source,
+			"https?://downloads.sourceforge.net/sourceforge/([^/]+)") or
+			string.match(source,
+			"https?://downloads.sourceforge.net/project/([^/]+)") or
+			string.match(source,
+			"https?://downloads.sourceforge.net/([^/]+)")
 		if sf_name then
 			return {
 				provider_name = "sf",
