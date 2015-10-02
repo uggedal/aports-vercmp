@@ -32,10 +32,11 @@ local function versions(self)
 end
 
 function M.init(pkg)
-	for source in pkg:remote_sources() do
-		local gnomename = string.match(source, "GNOME/sources/([^/]+)/")
-			or string.match(source,
-					"download.gnome.org/sources/([^/]+)/")
+	for _, source in pairs(pkg.valid_sources) do
+		local gnomename = string.match(source,
+			"GNOME/sources/([^/]+)/") or
+			string.match(source,
+			"download.gnome.org/sources/([^/]+)/")
 		if gnomename then
 			return {
 				provider_name = "gnome",

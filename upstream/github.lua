@@ -36,7 +36,7 @@ local function versions(self)
 end
 
 function M.init(pkg)
-	for source in pkg:remote_sources() do
+	for _, source in pairs(pkg.valid_sources) do
 		local project  = string.match(source,
 			"https://github.com/(.*)/archive/")
 		if project  then

@@ -6,6 +6,7 @@ This content is released under the MIT License.
 --]]
 
 local ver = require("ver")
+local net = require("net")
 
 local M = {}
 
@@ -21,10 +22,29 @@ local upstream_providers = {
 	(require("upstream.archlinux")),
 }
 
+local function strip_source(s)
+	return s:gsub("^saveas-", ""):gsub(".*::http", "http")
+end
+
+local function filter_sources(p)
+	local sources = {}
+
+	for source in p:remote_sources() do
+		local stripped = strip_source(source)
+		if net.supported(source) then
+			table.insert(sources, stripped)
+		end
+	end
+
+	return sources
+end
+
 local function search(p)
 	local upstream = nil
 	local newer = nil
 	local notfound = true
+
+	p.valid_sources = filter_sources(p)
 
 	for i, provider in pairs(upstream_providers) do
 		upstream = provider.init(p)

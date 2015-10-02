@@ -19,7 +19,7 @@ local function versions(self)
 end
 
 function M.init(pkg)
-	for source in pkg:remote_sources() do
+	for _, source in pairs(pkg.valid_sources) do
 		local cpan_name  = string.match(source,
 			"https?://search.cpan.org/.+/([^/]+)-")
 		if cpan_name then

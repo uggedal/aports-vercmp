@@ -24,17 +24,15 @@ end
 function M.init(pkg)
 	local r = pattern.name()
 
-	for source in pkg:remote_sources() do
-		if net.supported(source) then
-			local file_name = rex.match(source, r)
-			if file_name ~= nil then
-				return {
-					provider_name = "homepage",
-					versions = versions,
-					pkg = pkg,
-					file_name = file_name
-				}
-			end
+	for _, source in pairs(pkg.valid_sources) do
+		local file_name = rex.match(source, r)
+		if file_name ~= nil then
+			return {
+				provider_name = "homepage",
+				versions = versions,
+				pkg = pkg,
+				file_name = file_name
+			}
 		end
 	end
 	return nil

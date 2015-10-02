@@ -20,7 +20,7 @@ local function versions(self)
 end
 
 function M.init(pkg)
-	for source in pkg:remote_sources() do
+	for _, source in pairs(pkg.valid_sources) do
 		local sf_name  = string.match(source,
 			"https?://sourceforge.net/projects/([^/]+)") or
 			string.match(source,

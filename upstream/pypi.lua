@@ -33,7 +33,7 @@ local function versions(self)
 end
 
 function M.init(pkg)
-	for source in pkg:remote_sources() do
+	for _, source in pairs(pkg.valid_sources) do
 		local pypi_name  = string.match(source,
 			"https?://pypi.python.org/packages/source/[^/]+/([^/]+)/")
 		if pypi_name then
