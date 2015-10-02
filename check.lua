@@ -31,7 +31,7 @@ local function filter_sources(p)
 
 	for source in p:remote_sources() do
 		local stripped = strip_source(source)
-		if net.supported(source) then
+		if net.supported(stripped) then
 			table.insert(sources, stripped)
 		end
 	end
@@ -43,22 +43,27 @@ local function search(p)
 	local upstream = nil
 	local newer = nil
 	local notfound = true
+	local skip = true
 
 	p.valid_sources = filter_sources(p)
 
-	for i, provider in pairs(upstream_providers) do
-		upstream = provider.init(p)
+	if #p.valid_sources > 0 then
+		skip = false
 
-		if upstream ~= nil then
-			local versions = upstream:versions()
-			if #versions > 0 then
-				notfound = false
-				newer = ver.newer(p.pkgver, versions)
-				break
+		for i, provider in pairs(upstream_providers) do
+			upstream = provider.init(p)
+
+			if upstream ~= nil then
+				local versions = upstream:versions()
+				if #versions > 0 then
+					notfound = false
+					newer = ver.newer(p.pkgver, versions)
+					break
+				end
 			end
 		end
 	end
-	return upstream, newer, notfound
+	return upstream, newer, notfound, skip
 end
 
 function M.start(db, limit)
@@ -71,34 +76,36 @@ function M.start(db, limit)
 			break
 		end
 
-		local upstream, newer, notfound = search(p)
+		local upstream, newer, notfound, skip = search(p)
 
-		local t = nil
-		local m = p:get_maintainer()
-		if m == nil or m == "" then
-			m = "(unmaintained)"
-		end
-
-		if newer ~= nil then
-			t = {
-				["current"] = p.pkgver,
-				["new"] = newer,
-				["upstream"] = upstream.provider_name,
-				["notfound"] = notfound
-			}
-		end
-
-		if notfound then
-			t = {
-				["notfound"] = notfound
-			}
-		end
-
-		if t ~= nil then
-			if maintainers[m] == nil then
-				maintainers[m] = {}
+		if not skip then
+			local t = nil
+			local m = p:get_maintainer()
+			if m == nil or m == "" then
+				m = "(unmaintained)"
 			end
-			maintainers[m][p.pkgname] = t
+
+			if newer ~= nil then
+				t = {
+					["current"] = p.pkgver,
+					["new"] = newer,
+					["upstream"] = upstream.provider_name,
+					["notfound"] = notfound
+				}
+			end
+
+			if notfound then
+				t = {
+					["notfound"] = notfound
+				}
+			end
+
+			if t ~= nil then
+				if maintainers[m] == nil then
+					maintainers[m] = {}
+				end
+				maintainers[m][p.pkgname] = t
+			end
 		end
 	end
 
