@@ -9,6 +9,8 @@ local curl = require("lcurl")
 
 local M = {}
 
+local UA = "Mozilla/5.0 (X11; Linux i686; rv:41.0) Gecko/20100101 Firefox/41.0"
+
 local function status_ok(url, status)
 	if string.match(url, "^https?://") then
 		return status == 200
@@ -41,6 +43,7 @@ function M.fetch(url)
 				end)
 			:setopt(curl.OPT_FOLLOWLOCATION, true)
 			:setopt(curl.OPT_TIMEOUT, 10)
+			:setopt(curl.OPT_USERAGENT, UA)
 			:perform()
 		status = c:getinfo(curl.INFO_RESPONSE_CODE)
 		c:close()
