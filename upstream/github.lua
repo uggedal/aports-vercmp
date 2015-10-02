@@ -6,6 +6,7 @@ This content is released under the MIT License.
 --]]
 
 local net = require("net")
+local rex = require("rex_pcre")
 
 local M = {}
 
@@ -20,16 +21,8 @@ local function versions(self)
 		return vers
 	end
 
-	-- TODO fails if project has special characters, switch to pcre
-	for v in string.gmatch(data, ('a href="/%s/archive/v?([0-9a-z._-]+)%%.tar.gz"'):format(self.project)) do
-		-- TODO: make such logic global?
-		for _, s in pairs{
-				{search="-rc", replace="_rc"},
-				{search="-beta", replace="_beta"},
-				{search="-alpha", replace="_alpha"},
-			} do
-			v = string.gsub(v, s.search, s.replace)
-		end
+	local r = rex.new(("a href=./%s/archive/v?([0-9a-z._-]+)\\.tar\\.gz"):format(self.project))
+	for v in rex.gmatch(data, r) do
 		table.insert(vers, v)
 	end
 	return vers
